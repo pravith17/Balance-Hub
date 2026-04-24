@@ -1,13 +1,8 @@
 const multer = require('multer');
 const path = require('path');
 
-// Set storage engine
-const storage = multer.diskStorage({
-    destination: './uploads/',
-    filename: function(req, file, cb) {
-        cb(null, req.user._id + '-' + Date.now() + path.extname(file.originalname));
-    }
-});
+// Change from diskStorage to memoryStorage
+const storage = multer.memoryStorage();
 
 // Check File Type
 function checkFileType(file, cb) {
@@ -28,7 +23,7 @@ function checkFileType(file, cb) {
 // Init Upload
 const upload = multer({
     storage: storage,
-    limits: { fileSize: 5000000 }, // 5MB
+    limits: { fileSize: 5000000 }, // 5MB limit protects MongoDB's 16MB document limit
     fileFilter: function(req, file, cb) {
         checkFileType(file, cb);
     }
