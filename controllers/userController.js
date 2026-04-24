@@ -14,8 +14,11 @@ exports.updateProfile = async (req, res) => {
         const { firstName, middleName, lastName, dob } = req.body;
         let updateData = { firstName, middleName, lastName, dob };
 
+        // Convert the uploaded file buffer into a Base64 string
         if (req.file) {
-            updateData.profilePhoto = `/uploads/${req.file.filename}`;
+            const b64 = Buffer.from(req.file.buffer).toString('base64');
+            const dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+            updateData.profilePhoto = dataURI; // Save string to MongoDB
         }
 
         const user = await User.findByIdAndUpdate(req.user._id, updateData, { new: true, runValidators: true }).select('-password');
