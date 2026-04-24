@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "buildCommand": "echo 'Static Site Only'",
+  "outputDirectory": "public",
+  "rewrites": [
+    {
+      "source": "/api/:match*",
+      "destination": "https://<YOUR_RENDER_URL>.onrender.com/api/:match*"
+    }
+  ]
+}

@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balance Hub</title>
+    <!-- Favicon -->
+    <link rel="icon" href="/logo.PNG" type="image/png">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- jsPDF & xlsx -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+
+    <!-- Notification Toast -->
+    <div id="toast-container"></div>
+
+    <!-- Main Container -->
+    <div id="app">
+        <!-- Auth Section -->
+        <section id="auth-section" class="view active">
+            <div class="auth-container card glassmorphism">
+                <div class="theme-toggle-wrapper">
+                    <button id="theme-toggle-auth" class="btn-icon material-symbols-outlined">dark_mode</button>
+                </div>
+                <div class="text-center mb-1">
+                    <img src="/logo.PNG" alt="Balance Hub" style="height: 80px; margin-bottom: 15px; border-radius: 12px; box-shadow: var(--shadow);">
+                    <h2>Welcome Back</h2>
+                    <p>Login to your Balance Hub account securely.</p>
+                </div>
+                
+                <form id="login-form">
+                    <div class="form-group">
+                        <label>Email or Phone</label>
+                        <input type="text" id="login-identifier" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="login-password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Login</button>
+                </form>
+
+                <div class="auth-links">
+                    <a href="#" id="link-register">Create an Account</a>
+                    <a href="#" id="link-forgot-password">Forgot Password?</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Register Section -->
+        <section id="register-section" class="view">
+            <div class="auth-container card glassmorphism">
+                <div class="text-center mb-1">
+                    <img src="/logo.PNG" alt="Balance Hub" style="height: 80px; margin-bottom: 15px; border-radius: 12px; box-shadow: var(--shadow);">
+                    <h2>Create Account</h2>
+                </div>
+                <form id="register-form">
+                    <div class="form-grid">
+                        <div class="form-group"><label>First Name</label><input type="text" id="reg-fn" required></div>
+                        <div class="form-group"><label>Last Name</label><input type="text" id="reg-ln" required></div>
+                        <div class="form-group"><label>Email</label><input type="email" id="reg-email" required></div>
+                        <div class="form-group"><label>Phone</label><input type="text" id="reg-phone" required></div>
+                        <div class="form-group"><label>Date of Birth</label><input type="date" id="reg-dob" required></div>
+                        <div class="form-group"><label>Username</label><input type="text" id="reg-username" required></div>
+                        <div class="form-group" style="grid-column: span 2;"><label>Password</label><input type="password" id="reg-password" required></div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Register</button>
+                </form>
+                <div class="auth-links">
+                    <a href="#" id="link-login">Back to Login</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Forgot Password Section -->
+        <section id="forgot-password-section" class="view">
+            <div class="auth-container card glassmorphism">
+                <div class="text-center mb-1">
+                    <img src="/logo.PNG" alt="Balance Hub" style="height: 80px; margin-bottom: 15px; border-radius: 12px; box-shadow: var(--shadow);">
+                    <h2>Forgot Password</h2>
+                    <p>Enter your registered email to receive an OTP.</p>
+                </div>
+                <form id="forgot-form">
+                    <div class="form-group">
+                        <label>Registered Email</label>
+                        <input type="email" id="forgot-email" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Send OTP</button>
+                </form>
+                <div class="auth-links">
+                    <a href="#" id="link-forgot-back">Back to Login</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- OTP Section -->
+        <section id="otp-section" class="view">
+            <div class="auth-container card glassmorphism">
+                <div class="text-center mb-1">
+                    <img src="/logo.PNG" alt="Balance Hub" style="height: 80px; margin-bottom: 15px; border-radius: 12px; box-shadow: var(--shadow);">
+                    <h2 id="otp-title">Verify OTP</h2>
+                    <p id="otp-subtitle">Enter the 6-digit code sent to your email.</p>
+                </div>
+                <form id="otp-form">
+                    <div class="form-group">
+                        <label>OTP Code</label>
+                        <input type="text" id="otp-code" required maxlength="6" style="letter-spacing: 0.5rem; text-align: center; font-size: 1.5rem; font-weight: bold;">
+                    </div>
+                    <!-- Extra field for password reset -->
+                    <div id="otp-new-password-group" class="form-group hidden">
+                        <label>New Password</label>
+                        <input type="password" id="otp-new-password">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block" id="otp-submit-btn">Verify</button>
+                </form>
+                <div class="auth-links">
+                    <a href="#" id="link-otp-back">Cancel</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard Layout -->
+        <section id="main-layout" class="view layout-grid">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-header flex-align">
+                    <img src="/logo.PNG" alt="Logo" style="height: 35px; margin-right: 10px;">
+                    <h2>Balance<span class="text-primary">Hub</span></h2>
+                </div>
+                <nav class="nav-menu">
+                    <a href="#" class="nav-link active flex-align" data-target="dashboard-view"><span class="material-symbols-outlined mr-1">dashboard</span> Dashboard</a>
+                    <a href="#" class="nav-link flex-align" data-target="transactions-view"><span class="material-symbols-outlined mr-1">paid</span> Transactions</a>
+                    <a href="#" class="nav-link flex-align" data-target="statements-view"><span class="material-symbols-outlined mr-1">receipt_long</span> Statements</a>
+                    <a href="#" class="nav-link flex-align" data-target="profile-view"><span class="material-symbols-outlined mr-1">person</span> Profile</a>
+                </nav>
+                <div class="sidebar-footer">
+                    <button id="theme-toggle" class="btn-icon material-symbols-outlined" title="Dark Mode">dark_mode</button>
+                    <button id="logout-btn" class="btn btn-secondary btn-block mt-1 flex-align justify-center"><span class="material-symbols-outlined mr-1">logout</span> Logout</button>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <header class="topbar">
+                    <div class="topbar-brand flex-align">
+                        <img src="/logo.PNG" alt="BalanceHub Logo" style="height: 40px; margin-right: 10px; border-radius: 8px;">
+                        <h1 id="page-title" style="font-size: 1.4rem; font-weight: 800; margin: 0; letter-spacing: -0.03em;">Balance<span class="text-primary">Hub</span></h1>
+                    </div>
+                    <div class="topbar-actions">
+                        <button id="theme-toggle-topbar" class="btn-icon material-symbols-outlined" title="Dark Mode">dark_mode</button>
+                        <div class="notifications">
+                            <button id="notif-btn" class="btn-icon material-symbols-outlined">notifications <span id="notif-badge" class="badge">0</span></button>
+                            <div id="notif-dropdown" class="dropdown-menu hidden"></div>
+                        </div>
+                        <div class="user-profile-sm hidden-mobile">
+                            <img id="topbar-avatar" src="https://ui-avatars.com/api/?name=User" alt="Avatar">
+                            <span id="topbar-name">Loading...</span>
+                        </div>
+                    </div>
+                </header>
+
+                <div class="content-wrapper">
+                    <!-- Dashboard View -->
+                    <div id="dashboard-view" class="sub-view active">
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <h3>Total Given</h3>
+                                <p class="amount text-success" id="stat-given">₹0.00</p>
+                            </div>
+                            <div class="stat-card">
+                                <h3>Total Taken</h3>
+                                <p class="amount text-danger" id="stat-taken">₹0.00</p>
+                            </div>
+                            <div class="stat-card">
+                                <h3>Pending Given</h3>
+                                <p class="amount text-warning" id="stat-pending-given">₹0.00</p>
+                            </div>
+                            <div class="stat-card">
+                                <h3>Pending Taken</h3>
+                                <p class="amount text-warning" id="stat-pending-taken">₹0.00</p>
+                            </div>
+                        </div>
+                        <div class="people-section mt-2 card">
+                            <div class="flex-between mb-1">
+                                <h3>People</h3>
+                                <button class="btn btn-sm btn-primary" id="btn-add-person">+ Add New</button>
+                            </div>
+                            <div class="people-grid" id="people-list">
+                                <!-- Rendered via JS -->
+                                <div class="text-center text-muted w-100">Loading contacts...</div>
+                            </div>
+                        </div>
+                        <div class="charts-container mt-2">
+                            <div class="card">
+                                <h3>Given vs Taken</h3>
+                                <canvas id="pieChart"></canvas>
+                            </div>
+                            <div class="card">
+                                <h3>Recent Activity</h3>
+                                <div id="recent-activity-list" class="activity-list"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chat Ledger View -->
+                    <div id="chat-view" class="sub-view">
+                        <div class="chat-header card flex-between mb-1" style="padding: 1rem;">
+                            <div class="flex-align">
+                                <button class="btn-icon material-symbols-outlined mr-1" id="btn-back-chat">arrow_back</button>
+                                <img id="chat-avatar" src="https://ui-avatars.com/api/?name=User" class="avatar-md mr-1" style="width: 40px; height: 40px; border-radius: 50%;">
+                                <div>
+                                    <h3 id="chat-name" style="margin:0;">User Name</h3>
+                                    <p class="text-sm text-muted" id="chat-phone">+91 00000 00000</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm text-muted">Net Balance</p>
+                                <h3 id="chat-net-balance" class="font-bold">₹0.00</h3>
+                            </div>
+                        </div>
+                        
+                        <div class="chat-feed card" id="chat-feed-container">
+                            <!-- Bubbles rendered via JS -->
+                        </div>
+                        
+                        <div class="chat-footer card mt-1 flex-between" style="padding: 1rem;">
+                            <button class="btn btn-primary" id="btn-chat-pay" style="flex:1; margin-right:0.5rem; border-radius: 20px;">Pay</button>
+                            <button class="btn btn-secondary" id="btn-chat-give" style="flex:1; margin-left:0.5rem; border-radius: 20px;">Request</button>
+                        </div>
+                    </div>
+
+                    <!-- Transactions View -->
+                    <div id="transactions-view" class="sub-view">
+                        <div class="flex-between mb-1">
+                            <h2>Manage Loans</h2>
+                            <button class="btn btn-primary" id="btn-new-loan">+ New Loan</button>
+                        </div>
+                        <div class="table-responsive card">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>From/To</th>
+                                        <th>Type</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="transactions-table-body">
+                                    <!-- Rendered via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Statements View -->
+                    <div id="statements-view" class="sub-view">
+                        <h2>Statements & Export</h2>
+                        <div class="card mt-1 filters-container">
+                            <input type="month" id="filter-month">
+                            <select id="filter-status">
+                                <option value="">All Statuses</option>
+                                <option value="CONFIRMED">Confirmed</option>
+                                <option value="UNCONFIRMED">Unconfirmed</option>
+                                <option value="SETTLED">Settled</option>
+                            </select>
+                            <button class="btn btn-secondary" id="btn-export-pdf">Export PDF</button>
+                            <button class="btn btn-secondary" id="btn-export-excel">Export Excel</button>
+                        </div>
+                        <div class="table-responsive card mt-1">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Description</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="statements-table-body">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Profile View -->
+                    <div id="profile-view" class="sub-view">
+                        <div class="card" style="max-width: 600px; margin: 0 auto;">
+                            <div class="text-center" style="margin-bottom: 2rem;">
+                                <img id="profile-page-avatar" src="https://ui-avatars.com/api/?name=User" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid var(--card-bg); outline: 3px solid var(--primary-color); box-shadow: var(--shadow); margin-bottom: 1rem;">
+                                <h2 id="profile-page-name">User Name</h2>
+                                <p id="profile-page-acc" class="text-muted">Account: 123456</p>
+                            </div>
+                            
+                            <form id="profile-form">
+                                <div class="form-grid">
+                                    <div class="form-group"><label>First Name</label><input type="text" id="prof-fn"></div>
+                                    <div class="form-group"><label>Last Name</label><input type="text" id="prof-ln"></div>
+                                    <div class="form-group"><label>DOB</label><input type="date" id="prof-dob"></div>
+                                    <div class="form-group"><label>Profile Photo</label><input type="file" id="prof-photo" accept="image/*"></div>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-block mb-1">Save Changes</button>
+                            </form>
+                            <hr style="border:0; border-top:1px solid var(--border-color); margin: 2rem 0;">
+                            <h3>Settings</h3>
+                            <div class="mt-1 flex-column" style="gap: 1rem;">
+                                <button id="theme-toggle-mobile" class="btn btn-secondary flex-align justify-center"><span class="material-symbols-outlined mr-1">dark_mode</span> Toggle Dark Mode</button>
+                                <button id="logout-btn-mobile" class="btn btn-danger flex-align justify-center"><span class="material-symbols-outlined mr-1">logout</span> Logout</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            
+            <!-- Bottom Nav (Mobile Only) -->
+            <nav class="bottom-nav">
+                <a href="#" class="nav-link active flex-column flex-center" data-target="dashboard-view"><span class="material-symbols-outlined">home</span><span style="font-size: 0.75rem;">Home</span></a>
+                <a href="#" class="nav-link flex-column flex-center" data-target="transactions-view"><span class="material-symbols-outlined">paid</span><span style="font-size: 0.75rem;">Money</span></a>
+                <a href="#" class="nav-link flex-column flex-center" data-target="statements-view"><span class="material-symbols-outlined">receipt_long</span><span style="font-size: 0.75rem;">History</span></a>
+                <a href="#" class="nav-link flex-column flex-center" data-target="profile-view"><span class="material-symbols-outlined">person</span><span style="font-size: 0.75rem;">You</span></a>
+            </nav>
+        </section>
+    </div>
+
+    <!-- Modals -->
+    <div id="modal-new-loan" class="modal">
+        <div class="modal-content card">
+            <span class="close-btn">&times;</span>
+            <h2>Create New Loan</h2>
+            <form id="new-loan-form">
+                <div class="form-group">
+                    <label>Select User</label>
+                    <div class="search-user-wrapper">
+                        <input type="text" id="search-user-input" placeholder="Search by name, username, or phone" autocomplete="off">
+                        <div id="search-results" class="dropdown-menu hidden"></div>
+                    </div>
+                </div>
+                <div id="external-user-form" class="hidden card bg-light mt-1 mb-1">
+                    <h4>Add External Contact</h4>
+                    <p class="text-sm text-muted">User not found. Add them manually.</p>
+                    <div class="form-group"><label>First Name</label><input type="text" id="ext-fn"></div>
+                    <div class="form-group"><label>Last Name</label><input type="text" id="ext-ln"></div>
+                    <div class="form-group"><label>Phone</label><input type="text" id="ext-phone"></div>
+                    <button type="button" id="btn-add-external" class="btn btn-secondary btn-sm">Add & Select</button>
+                </div>
+                <input type="hidden" id="selected-user-id" required>
+                <div class="form-group">
+                    <label>Transaction Type</label>
+                    <select id="loan-type-select">
+                        <option value="lent">I am lending money to this user</option>
+                        <option value="borrowed">I borrowed money from this user</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Amount (₹)</label>
+                    <input type="number" step="0.01" id="loan-amount" required>
+                </div>
+                <div class="form-group">
+                    <label>Description / Notes</label>
+                    <textarea id="loan-desc" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Send Loan Request</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-repay" class="modal">
+        <div class="modal-content card">
+            <span class="close-btn">&times;</span>
+            <h2>Make Repayment</h2>
+            <form id="repay-form">
+                <input type="hidden" id="repay-loan-id">
+                <div class="form-group">
+                    <label>Amount (₹)</label>
+                    <input type="number" step="0.01" id="repay-amount" required>
+                </div>
+                <div class="form-group">
+                    <label>Proof of Payment (Optional)</label>
+                    <input type="file" id="repay-proof" accept="image/*,application/pdf">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Submit Payment</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- JS -->
+    <script src="script.js"></script>
+</body>
+</html>
