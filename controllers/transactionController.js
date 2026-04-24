@@ -167,10 +167,11 @@ exports.makeRepayment = async (req, res) => {
         }
 
         // Create repayment
+       // Create repayment
         const repayment = await Transaction.create({
             createdBy: req.user._id,
-            fromUser: parentLoan.toUser, // Person who owed money is paying
-            toUser: parentLoan.fromUser, // Person who lent money receives
+            fromUser: parentLoan.toUser, 
+            toUser: parentLoan.fromUser, 
             amount,
             description,
             type: 'REPAYMENT',
@@ -178,8 +179,11 @@ exports.makeRepayment = async (req, res) => {
             status: 'UNCONFIRMED'
         });
 
+        // Convert the uploaded file buffer into a Base64 string
         if (req.file) {
-            repayment.proofOfPayment = `/uploads/${req.file.filename}`;
+            const b64 = Buffer.from(req.file.buffer).toString('base64');
+            const dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+            repayment.proofOfPayment = dataURI; // Save string to MongoDB
             await repayment.save();
         }
 
